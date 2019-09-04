@@ -1,0 +1,76 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_Vm_name": {
+            "defaultValue": "Vm",
+            "type": "String"
+        },
+        "disks_Vm_OsDisk_1_fa09680a8943436b95ebec6b0ad02cfc_externalid": {
+            "defaultValue": "/subscriptions/6f299fe0-3a24-496f-95ce-d8d050082332/resourceGroups/rep/providers/Microsoft.Compute/disks/Vm_OsDisk_1_fa09680a8943436b95ebec6b0ad02cfc",
+            "type": "String"
+        },
+        "networkInterfaces_vm996_externalid": {
+            "defaultValue": "/subscriptions/6f299fe0-3a24-496f-95ce-d8d050082332/resourceGroups/rep/providers/Microsoft.Network/networkInterfaces/vm996",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[parameters('virtualMachines_Vm_name')]",
+            "location": "eastus",
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "Standard_DS1_v2"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2016-Datacenter-smalldisk",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Windows",
+                        "name": "[concat(parameters('virtualMachines_Vm_name'), '_OsDisk_1_fa09680a8943436b95ebec6b0ad02cfc')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS",
+                            "id": "[parameters('disks_Vm_OsDisk_1_fa09680a8943436b95ebec6b0ad02cfc_externalid')]"
+                        },
+                        "diskSizeGB": 30
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_Vm_name')]",
+                    "adminUsername": "testadmin",
+                    "windowsConfiguration": {
+                        "provisionVMAgent": true,
+                        "enableAutomaticUpdates": true
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[parameters('networkInterfaces_vm996_externalid')]"
+                        }
+                    ]
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "https://repdiag428.blob.core.windows.net/"
+                    }
+                },
+                "licenseType": "Windows_Server"
+            }
+        }
+    ]
+}
